@@ -21,15 +21,15 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="什么是镜像呢？镜像就是一个模版，用来创建容器的模板。当我们执行“docker run”的时候，会首先查找本地是否存在对应的镜像，如果不存在则会在 Docker Registry 上查找下载。Docker 的镜像是增量的修改，每次创建新的镜像都会在老的镜像上面构建一个增量的层(Layer)，有利于层的复用，减少镜像的体积，利于网络传输。 我们先来说几个镜像相关的概念，比如说 Repository 是">
+  <meta name="description" content="什么是镜像呢？镜像就是一个模版，用来创建容器的模板。当我们执行“docker run”的时候，会首先查找本地是否存在对应的镜像，如果不存在则会在 Docker Registry 上查找下载。Docker 的镜像是增量的修改，每次创建新的镜像都会在老的镜像上面构建一个增量的层(Layer)，有利于层的复用，减少镜像的体积，利于网络传输。 我们先来说几个镜像相关的概念，比如说 Repositor">
 <meta property="og:type" content="article">
 <meta property="og:title" content="镜像管理">
 <meta property="og:url" content="http://example.com/2023/03/08/%E9%95%9C%E5%83%8F%E7%AE%A1%E7%90%86/index.html">
 <meta property="og:site_name" content="Aimer&#39;s blog">
-<meta property="og:description" content="什么是镜像呢？镜像就是一个模版，用来创建容器的模板。当我们执行“docker run”的时候，会首先查找本地是否存在对应的镜像，如果不存在则会在 Docker Registry 上查找下载。Docker 的镜像是增量的修改，每次创建新的镜像都会在老的镜像上面构建一个增量的层(Layer)，有利于层的复用，减少镜像的体积，利于网络传输。 我们先来说几个镜像相关的概念，比如说 Repository 是">
+<meta property="og:description" content="什么是镜像呢？镜像就是一个模版，用来创建容器的模板。当我们执行“docker run”的时候，会首先查找本地是否存在对应的镜像，如果不存在则会在 Docker Registry 上查找下载。Docker 的镜像是增量的修改，每次创建新的镜像都会在老的镜像上面构建一个增量的层(Layer)，有利于层的复用，减少镜像的体积，利于网络传输。 我们先来说几个镜像相关的概念，比如说 Repositor">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-03-08T07:27:31.000Z">
-<meta property="article:modified_time" content="2023-03-08T08:17:01.740Z">
+<meta property="article:modified_time" content="2023-03-08T08:46:27.134Z">
 <meta property="article:author" content="Aimer">
 <meta property="article:tag" content="容器">
 <meta property="article:tag" content="docker">
@@ -227,7 +227,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2023-03-08 15:27:31 / 修改时间：16:17:01" itemprop="dateCreated datePublished" datetime="2023-03-08T15:27:31+08:00">2023-03-08</time>
+              <time title="创建时间：2023-03-08 15:27:31 / 修改时间：16:46:27" itemprop="dateCreated datePublished" datetime="2023-03-08T15:27:31+08:00">2023-03-08</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -271,7 +271,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>什么是镜像呢？镜像就是一个模版，用来创建容器的模板。当我们执行“docker run”的时候，会首先查找本地是否存在对应的镜像，如果不存在则会在 Docker Registry 上查找下载。Docker 的镜像是增量的修改，每次创建新的镜像都会在老的镜像上面构建一个增量的层(Layer)，有利于层的复用，减少镜像的体积，利于网络传输。</p>
+        <!-- 解决引用图片不显示问题 -->
+<meta name="referrer" content="no-referrer"/>
+
+<p>什么是镜像呢？镜像就是一个模版，用来创建容器的模板。当我们执行“docker run”的时候，会首先查找本地是否存在对应的镜像，如果不存在则会在 Docker Registry 上查找下载。Docker 的镜像是增量的修改，每次创建新的镜像都会在老的镜像上面构建一个增量的层(Layer)，有利于层的复用，减少镜像的体积，利于网络传输。</p>
 <p>我们先来说几个镜像相关的概念，比如说 Repository 是镜像存储的位置，名为仓库。而 Registry 是镜像仓库的注册服务器，每个仓库中都包含了很多的镜像。每个镜像还会又一个 Tag（标签), 这个 Tag 我们一般会标记为镜像的版本，这点就 Git 中的版本的概念是一致的。比如说 <code>Ubuntu:14.04</code> ，其中 <code>Ubuntu</code> 就是镜像的名字，而 <code>14.04</code> 是它的 Tag，也是它的版本。</p>
 <span id="more"></span>
 

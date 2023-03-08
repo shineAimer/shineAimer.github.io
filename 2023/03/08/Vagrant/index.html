@@ -21,15 +21,15 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="前言我个人很喜欢使用 Vagrant，如果要说一个理由，那是因为它简单，就和 Docker 一样简单。 那么有了 Docker 为什么还要提 Vagrant 呢？有如下原因:  在一个团队内，大家都使用 Docker，但是 Docker 在不同的操作系统上会有不同的表现。使用了 Vagrant 统一了 Docker 的运行环境，统一为 Linux。 你有没有想过，如果本地的 Docker 环境挂了">
+  <meta name="description" content="前言我个人很喜欢使用 Vagrant，如果要说一个理由，那是因为它简单，就和 Docker 一样简单。 那么有了 Docker 为什么还要提 Vagrant 呢？有如下原因:  在一个团队内，大家都使用 Docker，但是 Docker 在不同的操作系统上会有不同的表现。使用了 Vagrant 统一了 Docker 的运行环境，统一为 Linux。 你有没有想过，如果本地的 Docker 环">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Vagrant">
 <meta property="og:url" content="http://example.com/2023/03/08/Vagrant/index.html">
 <meta property="og:site_name" content="Aimer&#39;s blog">
-<meta property="og:description" content="前言我个人很喜欢使用 Vagrant，如果要说一个理由，那是因为它简单，就和 Docker 一样简单。 那么有了 Docker 为什么还要提 Vagrant 呢？有如下原因:  在一个团队内，大家都使用 Docker，但是 Docker 在不同的操作系统上会有不同的表现。使用了 Vagrant 统一了 Docker 的运行环境，统一为 Linux。 你有没有想过，如果本地的 Docker 环境挂了">
+<meta property="og:description" content="前言我个人很喜欢使用 Vagrant，如果要说一个理由，那是因为它简单，就和 Docker 一样简单。 那么有了 Docker 为什么还要提 Vagrant 呢？有如下原因:  在一个团队内，大家都使用 Docker，但是 Docker 在不同的操作系统上会有不同的表现。使用了 Vagrant 统一了 Docker 的运行环境，统一为 Linux。 你有没有想过，如果本地的 Docker 环">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-03-08T08:14:10.000Z">
-<meta property="article:modified_time" content="2023-03-08T08:26:18.783Z">
+<meta property="article:modified_time" content="2023-03-08T08:45:22.884Z">
 <meta property="article:author" content="Aimer">
 <meta property="article:tag" content="虚拟机">
 <meta property="article:tag" content="vagrant">
@@ -227,7 +227,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2023-03-08 16:14:10 / 修改时间：16:26:18" itemprop="dateCreated datePublished" datetime="2023-03-08T16:14:10+08:00">2023-03-08</time>
+              <time title="创建时间：2023-03-08 16:14:10 / 修改时间：16:45:22" itemprop="dateCreated datePublished" datetime="2023-03-08T16:14:10+08:00">2023-03-08</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -271,7 +271,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>我个人很喜欢使用 Vagrant，如果要说一个理由，那是因为它简单，就和 Docker 一样简单。</p>
+        <!-- 解决引用图片不显示问题 -->
+<meta name="referrer" content="no-referrer"/>
+
+<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>我个人很喜欢使用 Vagrant，如果要说一个理由，那是因为它简单，就和 Docker 一样简单。</p>
 <p>那么有了 Docker 为什么还要提 Vagrant 呢？有如下原因:</p>
 <ol>
 <li>在一个团队内，大家都使用 Docker，但是 Docker 在不同的操作系统上会有不同的表现。使用了 Vagrant 统一了 Docker 的运行环境，统一为 Linux。</li>

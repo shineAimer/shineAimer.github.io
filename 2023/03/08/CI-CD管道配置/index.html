@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="上一节中，我们讲述了什么是 Runner 以及如何部署注册 Runner。接着，我们来说说如何定义 CI&#x2F;CD 中的管道的配置。一个管道中，可以包含多个任务(Jobs),然后交由 Runner 去执行。  GitLab CI&#x2F;CD 管道的配置使用的是 YAML 格式的配置文件，在每一个项目中都统一命名位 .gitlab-ci.yml 。 一个 .gitlab-ci.yml 文">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CI&#x2F;CD管道配置">
+<meta property="og:url" content="http://example.com/2023/03/08/CI-CD%E7%AE%A1%E9%81%93%E9%85%8D%E7%BD%AE/index.html">
+<meta property="og:site_name" content="Aimer&#39;s blog">
+<meta property="og:description" content="上一节中，我们讲述了什么是 Runner 以及如何部署注册 Runner。接着，我们来说说如何定义 CI&#x2F;CD 中的管道的配置。一个管道中，可以包含多个任务(Jobs),然后交由 Runner 去执行。  GitLab CI&#x2F;CD 管道的配置使用的是 YAML 格式的配置文件，在每一个项目中都统一命名位 .gitlab-ci.yml 。 一个 .gitlab-ci.yml 文">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2020/png/502915/1593487968134-001a863e-462b-4415-92d0-7b4aaa9d03a3.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2020/png/502915/1593498562628-8ecb3d09-2d15-4c8f-9da1-558030387a25.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2020/png/502915/1593424521759-32e026d4-fc93-4241-ae5a-50e35c831d6e.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2020/png/502915/1593424753995-ba3f49ff-0f05-486b-b95a-c230593b4604.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2020/png/502915/1593484870175-7cbc1055-65fa-47f8-a9a9-9fc56cf93085.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2020/png/502915/1593484086638-796be45a-3199-48ff-a49b-5a053ec9eef9.png">
+<meta property="article:published_time" content="2023-03-08T08:12:59.000Z">
+<meta property="article:modified_time" content="2023-03-08T08:29:36.549Z">
+<meta property="article:author" content="Aimer">
+<meta property="article:tag" content="gitLab">
+<meta property="article:tag" content="git">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2020/png/502915/1593487968134-001a863e-462b-4415-92d0-7b4aaa9d03a3.png">
+
+<link rel="canonical" href="http://example.com/2023/03/08/CI-CD%E7%AE%A1%E9%81%93%E9%85%8D%E7%BD%AE/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>CI/CD管道配置 | Aimer's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="Aimer's blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Aimer's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">醉后不知天在水，慢船清梦压星河</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-rss">
+
+    <a href="/atom.xml" rel="section"><i class="fa fa-rss fa-fw"></i>Rss</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/03/08/CI-CD%E7%AE%A1%E9%81%93%E9%85%8D%E7%BD%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Aimer">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Aimer's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CI/CD管道配置
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-03-08 16:12:59 / 修改时间：16:29:36" itemprop="dateCreated datePublished" datetime="2023-03-08T16:12:59+08:00">2023-03-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/devops/" itemprop="url" rel="index"><span itemprop="name">devops</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>上一节中，我们讲述了什么是 Runner 以及如何部署注册 Runner。接着，我们来说说如何定义 CI&#x2F;CD 中的管道的配置。一个管道中，可以包含多个任务(Jobs),然后交由 Runner 去执行。</p>
+</blockquote>
+<p>GitLab CI&#x2F;CD 管道的配置使用的是 YAML 格式的配置文件，在每一个项目中都统一命名位 <code>.gitlab-ci.yml</code> 。</p>
+<p>一个 <code>.gitlab-ci.yml</code> 文件中定义了管道的顺序和结构:</p>
+<ul>
+<li>如何使用 GitLab Runner 执行？</li>
+<li>特定条件下应该做的事情，比如说当处理成功或失败的时候。</li>
+</ul>
+<span id="more"></span>
+
+<h3 id="管道任务-Pipeline-Jobs"><a href="#管道任务-Pipeline-Jobs" class="headerlink" title="管道任务(Pipeline Jobs)"></a>管道任务(Pipeline Jobs)</h3><p>管道(Pipeline)的配置始于任务(Jobs)。任务是 <code>.gitlab-ci.yml</code> 配置文件中最基础的对象。Jobs 由下面这些特点:</p>
+<ul>
+<li>定义了约束，说明在什么情况下回去执行。</li>
+<li>顶级的元素可以使用任意的名称，但是必须包含 <code>script</code> 子句。</li>
+<li>不限制任务定义的数量。</li>
+</ul>
+<p>下面这个示例展示了任务的定义:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">job1:</span><br><span class="line">  script: &quot;echo job1&quot;</span><br><span class="line">job2:</span><br><span class="line">	script: &quot;echo job2&quot;</span><br></pre></td></tr></table></figure>
+
+<p>上面这个示例展示了两个相互隔离的任务，每个任务都执行不同的命令。当然，一行脚本也可以执行多个命令，比如 <code>./configure;make;make install</code> 或者运行一个脚本文件(可以存储在仓库中)。</p>
+<p>Runners 会选择对应的 Jobs 在各自的环境中执行，重要的是，每个 Job 的执行都是独立的。</p>
+<h4 id="CI-Lint"><a href="#CI-Lint" class="headerlink" title="CI Lint"></a>CI Lint</h4><p>GitLab UI 提供了对基于 YAML 的配置文件的验证工具，如下图所示:</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2020/png/502915/1593487968134-001a863e-462b-4415-92d0-7b4aaa9d03a3.png"></p>
+<p>选择 <strong>CI Lint</strong> 可以进行配置文件有效性的验证。</p>
+<h4 id="无效的管道名"><a href="#无效的管道名" class="headerlink" title="无效的管道名"></a>无效的管道名</h4><p>每个任务的名称都必须是唯一的，但也有少数的名称是 GitLab 的保留字符，不可以作为管道的名称:</p>
+<table>
+<thead>
+<tr>
+<th>image</th>
+<th>services</th>
+<th>stages</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>types</td>
+<td>before_script</td>
+<td>after_script</td>
+</tr>
+<tr>
+<td>variables</td>
+<td>cache</td>
+<td>include</td>
+</tr>
+</tbody></table>
+<p>当你使用了特殊的值(比如 <code>true</code> 或者 <code>false</code> )出现验证错误的时候，你可以尝试下面两种写法：</p>
+<ol>
+<li>使用双引号包含它们</li>
+<li>更改他们的来源，比如: <code>/bin/true</code></li>
+</ol>
+<p> </p>
+<h3 id="配置的参数"><a href="#配置的参数" class="headerlink" title="配置的参数"></a>配置的参数</h3><p>配置的参数可以参考附录中的 <strong>管道配置参数表</strong> 。下面针对一些常用的配置做讲解。</p>
+<h4 id="stage"><a href="#stage" class="headerlink" title="stage"></a>stage</h4><p><code>stage</code> 为一组 Jobs 定义了不同的阶段，相同阶段会并发执行。同时，不同的 stage 之间是按照配置文件中定义的顺序执行的。举例说明:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">stages:</span><br><span class="line">	- build</span><br><span class="line">  - test</span><br><span class="line">  - deploy</span><br><span class="line">  </span><br><span class="line">job0:</span><br><span class="line">	stage: build</span><br><span class="line">  script: &quot;echo job0&quot;</span><br><span class="line">  </span><br><span class="line">job1:</span><br><span class="line">	stage: build</span><br><span class="line">  script: &quot;echo job1&quot;</span><br><span class="line">  </span><br><span class="line">job2:</span><br><span class="line">	stage: test</span><br><span class="line">  script: &quot;echo job2&quot;</span><br><span class="line"> </span><br><span class="line">job3:</span><br><span class="line">	stage: deploy</span><br><span class="line">  script: &quot;echo job3&quot;</span><br></pre></td></tr></table></figure>
+
+<p>根据配置文件对 stages 的定义，会首先执行 build,全部执行成功后执行 test, 全部执行成功后执行 deploy。如示例中，build 由多个 job, 这些 job 会并行执行。</p>
+<p><strong>如果 job 没有指定 stage, 默认是 test.</strong> </p>
+<p>另外，GitLab 还定义了两个特殊的 state, 分别是 <code>.pre</code> 和 <code>.post</code> 。顾名思义， <code>.pre</code> 会在所有的 stage 之前执行，而 <code>.post</code> 会在所有的 stage 之后执行。如下实例:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">stages:</span><br><span class="line">	- a</span><br><span class="line">  - b</span><br><span class="line">  </span><br><span class="line">job_pre:</span><br><span class="line">	stage: .pre</span><br><span class="line">  script:</span><br><span class="line">  	- echo pre</span><br><span class="line"></span><br><span class="line">job_a:</span><br><span class="line">	stage: a</span><br><span class="line">  script:</span><br><span class="line">  	- echo a</span><br><span class="line"></span><br><span class="line">job_b:</span><br><span class="line">	stage: b</span><br><span class="line">  script:</span><br><span class="line">  	- echo b</span><br><span class="line">    </span><br><span class="line">job_post:</span><br><span class="line">	stage: .post</span><br><span class="line">  script:</span><br><span class="line">    - echo post</span><br></pre></td></tr></table></figure>
+
+<p>执行这个配置文件中定义的 Pipeline, 我们得到如下的结果:</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2020/png/502915/1593498562628-8ecb3d09-2d15-4c8f-9da1-558030387a25.png"></p>
+<h3 id="CI-x2F-CD-环境变量"><a href="#CI-x2F-CD-环境变量" class="headerlink" title="CI&#x2F;CD 环境变量"></a>CI&#x2F;CD 环境变量</h3><p>环境变量是动态命名的值，它可以影响运行中的进程在操作系统上的行为。</p>
+<p>环境变量是流程运行环境的一部分。比如说，运行的进程可以查询到一个名为 <code>TEMP</code> 的环境变量，从此可知将一些临时文件存储在什么位置。或者为不同的脚本中都需要用到的数据库定义一个名为 <code>URL</code> 的环境变量来标识其地址。</p>
+<p>环境变量对于自定义在任务的执行非常有用。这些变量的使用，可以使得你不用在代码中硬编码它的值。</p>
+<h4 id="预定义的环境变量"><a href="#预定义的环境变量" class="headerlink" title="预定义的环境变量"></a>预定义的环境变量</h4><p>GitLab CI&#x2F;CD 预定义了很多的变量，并在进行运行的过程中主动的赋值，不需要特别的说明和定义。比如说，你可以使用这些变量获得 issue 的编号、用户的名称、分支的名称、管道和提交的 ID，以及更多。</p>
+<p>GitLab 会解析 <code>.gitlab-ci.yml</code>配置文件中的信息，并将其发送给 Runner。这些信息中使用到的环境变量会被暴露在 Runner 运行的本地环境中，然后 Runner 会运行配置文件中执行的脚本。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">test_variable:</span><br><span class="line">  stage: test</span><br><span class="line">  tags:</span><br><span class="line">    - api</span><br><span class="line">  script:</span><br><span class="line">    - echo $CI_JOB_STAGE</span><br></pre></td></tr></table></figure>
+
+<p>这个任务执行之后，会有如下输出:</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2020/png/502915/1593424521759-32e026d4-fc93-4241-ae5a-50e35c831d6e.png"></p>
+<p>如果我们要输出所有的环境变量可以使用如下脚本:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">test_variable:</span><br><span class="line">  stage: test</span><br><span class="line">  tags:</span><br><span class="line">    - api</span><br><span class="line">  script:</span><br><span class="line">    - export</span><br></pre></td></tr></table></figure>
+
+<p>输出结果如下，部分内容在截图中省略:</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2020/png/502915/1593424753995-ba3f49ff-0f05-486b-b95a-c230593b4604.png"></p>
+<h4 id="自定义的变量"><a href="#自定义的变量" class="headerlink" title="自定义的变量"></a>自定义的变量</h4><p>当你需要自定义变量的时候，可以通过 GitLab 的界面，或是通过 API，或是直接在 <code>.gitlab-ci.yml</code>  配置文件中定义。</p>
+<p>这些自定义的变量可以在 Runner 中的管道运行的任意时刻使用。你也可以手动地在特定的管道中复写变量的值。</p>
+<p>这里由两种类型的变量: 变量和文件。你不能在配置文件 <code>.gitlab-ci.yml</code> 中设置，但是可以通过 GitLab 的 UI 或是通过 API 去设置。</p>
+<p>如何在 <code>.gitlab-ci.yml</code> 中去自定义变量呢？如下所示:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">variables:</span><br><span class="line">	TEST: &quot;Hello World&quot;</span><br><span class="line">script:</span><br><span class="line">	echo &quot;$TEST&quot;</span><br></pre></td></tr></table></figure>
+
+<p>我们可以使用 GitLab UI 去添加或更新自定义的环境变量:</p>
+<ol>
+<li>进入你的项目: <strong>Settings &gt; CI&#x2F;CD</strong> 的 <strong>Variables</strong> 区块.</li>
+<li>单击 <strong>Add Variable</strong> 按钮。在 <strong>Add Variables</strong>  模块中，填写如下信息:</li>
+</ol>
+<ul>
+<li><strong>Key</strong> : 必须是一行，没有空格，仅允许是字符、数字以及 <code>_</code> 下划线。</li>
+<li><strong>Value</strong> : 没有任何限制。</li>
+<li><strong>Type</strong> : File 或者 Variable。</li>
+<li><strong>Environment scope</strong> : ALL 或者特定的环境。</li>
+<li><strong>Protect variable</strong> (可选): 如果勾选，该变量仅能在受保护的分支或 tags 的管道中使用。</li>
+<li><strong>Mask variable</strong> (可选): 如果勾选，该变量会以掩码的形式记录日志，如果值不满足要求则不会被记录。</li>
+</ul>
+<p>掩码变量的要求如下:</p>
+<ul>
+<li>必须是单行数据。</li>
+<li>必须不少于 8 个字符。</li>
+<li>不能是预定义的环境变量。</li>
+<li>只能包含 Base64 alphabet（RFC4648) 标准中定义的字符。在 GitLab 12.2 以及更新的版本中， <code>@</code> 和 <code>:</code> 是有效的值。</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2020/png/502915/1593484870175-7cbc1055-65fa-47f8-a9a9-9fc56cf93085.png"></p>
+<p>另外，除了项目级别的变量。我们也可以为组设置环境变量(可以通过 GitLab UI 项目组所在的变量设置项)。我们也推荐使用项目组环境变量来存储一些涉密的信息，比如密码、SSH Keys 以及相关的证书。如下图所示:</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2020/png/502915/1593484086638-796be45a-3199-48ff-a49b-5a053ec9eef9.png"></p>
+<h3 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h3><h4 id="管道配置参数表"><a href="#管道配置参数表" class="headerlink" title="管道配置参数表"></a>管道配置参数表</h4><p>下面这份表格取自官方文档，并不完整，翻译也并不十分准确，仅供参考。完整的文档，请移步<a target="_blank" rel="noopener" href="https://docs.gitlab.com/ee/ci/yaml/#gitlab-cicd-pipeline-configuration-reference">官方文档</a>。</p>
+<table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>script</td>
+<td>由 Runner 执行的 Shell 脚本</td>
+</tr>
+<tr>
+<td>image</td>
+<td>Docker 的镜像名称</td>
+</tr>
+<tr>
+<td>services</td>
+<td>Docker 的服务镜像，比如 <code>services:name</code> , <code>services:alias</code> , <code>services:entrypoint</code> 或者 <code>services:command</code> .</td>
+</tr>
+<tr>
+<td>before_script</td>
+<td>在任务执行之前执行的脚本</td>
+</tr>
+<tr>
+<td>after_script</td>
+<td>在任务执行之后执行的脚本</td>
+</tr>
+<tr>
+<td>stage</td>
+<td>定义任务的 job stage(默认为 <code>test</code> )</td>
+</tr>
+<tr>
+<td>only</td>
+<td>创建任务的限制，比如 <code>only:refs</code> , <code>only:kubernetes</code> , <code>only:variables</code> , <code>only:changes</code> .</td>
+</tr>
+<tr>
+<td>except</td>
+<td>不创建任务的限制,比如 <code>except:refs</code> , <code>except:kubernetes</code> , <code>except:varibales</code> , <code>except:changes</code> 。</td>
+</tr>
+<tr>
+<td>rules</td>
+<td>评估和确定 obj 的选定属性以及是否创建作业的条件列表。只可以选用 <code>only</code> &#x2F; <code>except</code></td>
+</tr>
+<tr>
+<td>tags</td>
+<td>选择由哪些相同标签的 Runner 运行</td>
+</tr>
+<tr>
+<td>allow_failure</td>
+<td>运行 job 执行失败，失败不会影响提交的状态</td>
+</tr>
+<tr>
+<td>when</td>
+<td>什么时候运行 job。比如 <code>when:manual</code> 以及 <code>when:delayed</code> .</td>
+</tr>
+<tr>
+<td>environment</td>
+<td>job 部署的环境名称。比如 <code>environment:name</code> , <code>environment:url</code> , <code>environment:on_stop</code> ， <code>environment:auto_stop_in</code> 和 <code>environment:action</code> .</td>
+</tr>
+<tr>
+<td>cache</td>
+<td>在后续的运行中被缓存的文件列表。比如: <code>cache:paths</code> , <code>cache:key</code> , <code>cache:untracked</code> 和 <code>cache:policy</code> .</td>
+</tr>
+<tr>
+<td>retry</td>
+<td>定义当发生错误时，可以自动重试的次数和时间。</td>
+</tr>
+<tr>
+<td>timeout</td>
+<td>定义超时时间，优先于项目中超时的设置。</td>
+</tr>
+<tr>
+<td>include</td>
+<td>包含附加的 YAML 任务文件。比如 <code>include:local</code> 、 <code>include:file</code> 、 <code>include:template</code> 、 <code>include:remote</code> .</td>
+</tr>
+<tr>
+<td>variables</td>
+<td>定义任务级别的变量</td>
+</tr>
+<tr>
+<td>resources_group</td>
+<td>限制任务的并发数</td>
+</tr>
+<tr>
+<td>release</td>
+<td>指示 Runner 生成一个 Release 对象。</td>
+</tr>
+</tbody></table>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ol>
+<li><a target="_blank" rel="noopener" href="https://docs.gitlab.com/ee/README.html">GitLab 官方文档</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.gitlab.com/ee/ci/yaml/README.html#anchors">GitLab CI&#x2F;CD Pipeline Configuration Reference</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/gitLab/" rel="tag"># gitLab</a>
+              <a href="/tags/git/" rel="tag"># git</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/03/08/GitlabRunner/" rel="prev" title="GitlabRunner">
+      <i class="fa fa-chevron-left"></i> GitlabRunner
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/03/08/%E7%94%9F%E6%88%90GitLabEE%E8%AE%B8%E5%8F%AF%E8%AF%81/" rel="next" title="生成GitLabEE许可证">
+      生成GitLabEE许可证 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%A1%E9%81%93%E4%BB%BB%E5%8A%A1-Pipeline-Jobs"><span class="nav-number">1.</span> <span class="nav-text">管道任务(Pipeline Jobs)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#CI-Lint"><span class="nav-number">1.1.</span> <span class="nav-text">CI Lint</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%A0%E6%95%88%E7%9A%84%E7%AE%A1%E9%81%93%E5%90%8D"><span class="nav-number">1.2.</span> <span class="nav-text">无效的管道名</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E7%9A%84%E5%8F%82%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text">配置的参数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#stage"><span class="nav-number">2.1.</span> <span class="nav-text">stage</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CI-x2F-CD-%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="nav-number">3.</span> <span class="nav-text">CI&#x2F;CD 环境变量</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%A2%84%E5%AE%9A%E4%B9%89%E7%9A%84%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="nav-number">3.1.</span> <span class="nav-text">预定义的环境变量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E7%9A%84%E5%8F%98%E9%87%8F"><span class="nav-number">3.2.</span> <span class="nav-text">自定义的变量</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%84%E5%BD%95"><span class="nav-number">4.</span> <span class="nav-text">附录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AE%A1%E9%81%93%E9%85%8D%E7%BD%AE%E5%8F%82%E6%95%B0%E8%A1%A8"><span class="nav-number">4.1.</span> <span class="nav-text">管道配置参数表</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Aimer"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Aimer</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/shineAimer" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;shineAimer" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Aimer</span>
+</div>
+
+<!-- 删除 “由 Hexo & NexT.Gemini 强力驱动” -->
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div> -->
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

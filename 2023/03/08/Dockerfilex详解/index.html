@@ -21,15 +21,18 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta property="og:type" content="article">
+  <meta name="description" content="这一篇文档详细描述了 Dockerfile 的语法，通过这篇文档可以使用 Dockerfile 创建自己的 Docker 镜像。  使用 FROM 选择基础镜像在 Dockerfile 中，我们可以使用FROM 指令来指定基础的镜像，例如: 1FROM ubuntu  这个基础的镜像的选择需要遵循下面几个原则:  官方镜像优于非官方镜像，如果没有官方镜像，尽量选择 Dockerfile 开源的镜">
+<meta property="og:type" content="article">
 <meta property="og:title" content="Dockerfilex详解">
 <meta property="og:url" content="http://example.com/2023/03/08/Dockerfilex%E8%AF%A6%E8%A7%A3/index.html">
 <meta property="og:site_name" content="Aimer&#39;s blog">
+<meta property="og:description" content="这一篇文档详细描述了 Dockerfile 的语法，通过这篇文档可以使用 Dockerfile 创建自己的 Docker 镜像。  使用 FROM 选择基础镜像在 Dockerfile 中，我们可以使用FROM 指令来指定基础的镜像，例如: 1FROM ubuntu  这个基础的镜像的选择需要遵循下面几个原则:  官方镜像优于非官方镜像，如果没有官方镜像，尽量选择 Dockerfile 开源的镜">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-03-08T07:28:19.000Z">
-<meta property="article:modified_time" content="2023-03-08T07:38:17.517Z">
+<meta property="article:modified_time" content="2023-03-08T08:22:12.157Z">
 <meta property="article:author" content="Aimer">
 <meta property="article:tag" content="容器">
+<meta property="article:tag" content="docker">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://example.com/2023/03/08/Dockerfilex%E8%AF%A6%E8%A7%A3/">
@@ -224,7 +227,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2023-03-08 15:28:19 / 修改时间：15:38:17" itemprop="dateCreated datePublished" datetime="2023-03-08T15:28:19+08:00">2023-03-08</time>
+              <time title="创建时间：2023-03-08 15:28:19 / 修改时间：16:22:12" itemprop="dateCreated datePublished" datetime="2023-03-08T15:28:19+08:00">2023-03-08</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -232,7 +235,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/docker/" itemprop="url" rel="index"><span itemprop="name">docker</span></a>
+                  <a href="/categories/devops/" itemprop="url" rel="index"><span itemprop="name">devops</span></a>
                 </span>
             </span>
 
@@ -249,14 +252,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>0</span>
+              <span>3.4k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>3 分钟</span>
             </span>
 
         </div>
@@ -268,7 +271,90 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        
+        <blockquote>
+<p>这一篇文档详细描述了 Dockerfile 的语法，通过这篇文档可以使用 Dockerfile 创建自己的 Docker 镜像。</p>
+</blockquote>
+<h3 id="使用-FROM-选择基础镜像"><a href="#使用-FROM-选择基础镜像" class="headerlink" title="使用 FROM 选择基础镜像"></a>使用 FROM 选择基础镜像</h3><p>在 Dockerfile 中，我们可以使用<code>FROM</code> 指令来指定基础的镜像，例如:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FROM ubuntu</span><br></pre></td></tr></table></figure>
+
+<p>这个基础的镜像的选择需要遵循下面几个原则:</p>
+<ul>
+<li>官方镜像优于非官方镜像，如果没有官方镜像，尽量选择 Dockerfile 开源的镜像；</li>
+<li>使用固定版本的 tag，而不是每次都是用 latest；</li>
+<li>尽量选择体积小的镜像，推荐使用 alpine 镜像；</li>
+</ul>
+<span id="more"></span>
+
+<h3 id="通过-RUN-执行指令"><a href="#通过-RUN-执行指令" class="headerlink" title="通过 RUN 执行指令"></a>通过 RUN 执行指令</h3><p>通过 <code>RUN</code> 可以执行一些指令，用来安装软件、配置、清理等操作。但是在编写 <code>RUN</code> 指令的时候，需要主要，我们需要把多条 <code>RUN</code> 合并成一条，这样在镜像中只会生成一层(Layer)。</p>
+<p>压缩前:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">FROM ubuntu</span><br><span class="line">RUN echo &quot;deb http://mirrors.cloud.aliyuncs.com/ubuntu/ trusty main universe&quot; &gt; /etc/apt/sources.lists</span><br><span class="line">RUN apt-get update</span><br><span class="line">RUN apt-get install vim -y</span><br></pre></td></tr></table></figure>
+
+<p>然后我们来看看压缩指令后的镜像:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">FROM ubuntu</span><br><span class="line">RUN echo &quot;deb http://mirrors.cloud.aliyuncs.com/ubuntu/ trusty main universe&quot; &gt; /etc/apt/sources.lists &amp;&amp; \</span><br><span class="line">    apt-get update &amp;&amp; \</span><br><span class="line">    apt-get install vim -y</span><br></pre></td></tr></table></figure>
+
+<p>我们来看一下它们之间分层的对比:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ docker image history test:before</span><br><span class="line">IMAGE          CREATED          CREATED BY                                      SIZE      COMMENT</span><br><span class="line">941215378f1a   11 minutes ago   /bin/sh -c apt-get install vim -y               68.2MB</span><br><span class="line">e95b3c10769c   11 minutes ago   /bin/sh -c apt-get update                       29.7MB</span><br><span class="line">57e911ab921c   12 minutes ago   /bin/sh -c echo &quot;deb http://mirrors.cloud.al…   67B</span><br><span class="line">c29284518f49   8 days ago       /bin/sh -c #(nop)  CMD [&quot;bash&quot;]                 0B</span><br><span class="line">&lt;missing&gt;      8 days ago       /bin/sh -c #(nop) ADD file:5c3d9d2597e01d1ce…   72.8MB</span><br><span class="line"></span><br><span class="line">$ docker image history test:after</span><br><span class="line">IMAGE          CREATED         CREATED BY                                      SIZE      COMMENT</span><br><span class="line">9343b9eb6723   4 minutes ago   /bin/sh -c echo &quot;deb http://mirrors.cloud.al…   97.9MB</span><br><span class="line">c29284518f49   8 days ago      /bin/sh -c #(nop)  CMD [&quot;bash&quot;]                 0B</span><br><span class="line">&lt;missing&gt;      8 days ago      /bin/sh -c #(nop) ADD file:5c3d9d2597e01d1ce…   72.8MB</span><br></pre></td></tr></table></figure>
+
+<h3 id="文件的复制和目录操作"><a href="#文件的复制和目录操作" class="headerlink" title="文件的复制和目录操作"></a>文件的复制和目录操作</h3><p>复制文件到镜像中，有两个指令可以实现，分别是<code>COPY</code> 和 <code>ADD</code> 。所有的文件都是用 <code>COPY</code> 指令，仅在需要自动解压缩的场景才是用 <code>ADD</code> 指令。</p>
+<p><code>COPY</code> 指令会复制文件本地的权限到镜像中，也就是说复制后的文件拥有源文件一样的文件权限。</p>
+<p><code>ADD</code> 指令，如果复制的是一个 gzip 的压缩文件的时候，会自动去解压缩文件。</p>
+<p>我们可以使用 <code>WORKDIR</code> 指令可切换目录，就类似于 Linux 中的 <code>cd</code> 命令。不同点在于，如果切换的目录不存在，则会自动创建。</p>
+<h3 id="构建参数和环境变量"><a href="#构建参数和环境变量" class="headerlink" title="构建参数和环境变量"></a>构建参数和环境变量</h3><p>在 Dockerfile 中，我们可以通过 <code>ENV</code> 或者 <code>ARG</code> 来创建一个变量。但是两者之间存在很多不同，且容易混淆。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">FROM ubuntu</span><br><span class="line">ENV PACKAGE=vim</span><br><span class="line">RUN apt-get update &amp;&amp; \</span><br><span class="line">    apt-get install -y $&#123;PACKAGE&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>ARG</code> 的语法也是一样的。那么它们之间有什么区别呢？</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>ARG</th>
+<th>ENV</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>生命周期</td>
+<td>只存在于镜像构建阶段</td>
+<td>在镜像构建之后也可以通过环境变量读取</td>
+</tr>
+<tr>
+<td>是否可以动态修改</td>
+<td>可以在构建的时候通过<code>--build-arg</code> 参数动态指定，覆盖 Dockfile 中的参数</td>
+<td>不可以</td>
+</tr>
+</tbody></table>
+<p>它们的关注点不一样，<code>ARG</code> 关注的是在镜像构建阶段，而 <code>ENV</code> 关注的是容器的创建以及运行阶段。</p>
+<h3 id="指定容器启动命令"><a href="#指定容器启动命令" class="headerlink" title="指定容器启动命令"></a>指定容器启动命令</h3><p><code>CMD</code> 可以用来设置容器启动时默认会指定的命令。需要注意下面这些点:</p>
+<ul>
+<li>如果 <code>docker container run</code> 启动容器时指定了其他命令，则 <code>CMD</code> 指令会被忽略；</li>
+<li>如果定了了多个 <code>CMD</code> 指令，则只有最后一个会被执行；</li>
+</ul>
+<p><code>ENTRYPOINT</code> 指令也可以用来指定容器启动命令，那么它和 <code>CMD</code> 指令有什么区别呢？</p>
+<ul>
+<li><code>CMD</code> 指令设置的命令，可以在<code>docker container run</code> 时传入其他命令覆盖，但是<code>ENTRYPOINT</code> 指令设置的命令则不会；</li>
+<li><code>ENTRYPOINT</code> 和 <code>CMD</code> 可以联合使用，<code>ENTRYPOINT</code> 指令设置执行的命令，而 CMD 传递参数；</li>
+</ul>
+<p>在编写命令的时候，支持两种格式，分别为 Shell 格式和 Exec 格式：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># Exec</span><br><span class="line">CMD [&quot;echo&quot;, &quot;hello docker&quot;]</span><br><span class="line"># Shell</span><br><span class="line">CMD echo &quot;Hello $NAME&quot;</span><br><span class="line"># 如果存在变量，则 Exec 模式应该写成如下形式</span><br><span class="line">CMD [&quot;sh&quot;, &quot;-c&quot;, &quot;echo hello $NAME&quot;]</span><br></pre></td></tr></table></figure>
+
+<h4 id="CMD-示例"><a href="#CMD-示例" class="headerlink" title="CMD 示例"></a>CMD 示例</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">我们先来看下面的这个 Dockerfile 示例:</span><br><span class="line"></span><br><span class="line">FROM ubuntu:21.04</span><br><span class="line">CMD [&quot;echo&quot;, &quot;hello docker&quot;]</span><br></pre></td></tr></table></figure>
+
+<p>我们可以通过命令行中传入的命令来覆盖它:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ docker container run --rm -it test:cmd echo &quot;hello world&quot;</span><br><span class="line">hello world</span><br><span class="line"></span><br><span class="line">$ docker container run --rm -it test:cmd</span><br><span class="line">hello docker</span><br></pre></td></tr></table></figure>
+
+<h4 id="ENTRYPOINT-示例"><a href="#ENTRYPOINT-示例" class="headerlink" title="ENTRYPOINT 示例"></a>ENTRYPOINT 示例</h4><p>接着再来看第二个 Dockerfile 示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">FROM ubuntu:21.04</span><br><span class="line">ENTRYPOINT [&quot;echo&quot;]</span><br><span class="line">CMD []</span><br></pre></td></tr></table></figure>
+
+<p>然后我们运行这个容器:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ docker container run --rm -it test:entrypoint echo &quot;Hello World&quot;</span><br><span class="line">echo Hello World</span><br><span class="line"></span><br><span class="line">发现了没有？答应出来的是 `echo Hello World` 而不是 `Hello World`。后面的都被作为参数传递给了 `ENTRYPOINT` 中的 `echo` 命令。</span><br></pre></td></tr></table></figure>
+
+<h3 id="Dockerfile-最佳实践"><a href="#Dockerfile-最佳实践" class="headerlink" title="Dockerfile 最佳实践"></a>Dockerfile 最佳实践</h3><p>接下来介绍一些编写 Dockerfile 的最佳实践。</p>
+<h4 id="尽可能使用缓存来加快构建速度"><a href="#尽可能使用缓存来加快构建速度" class="headerlink" title="尽可能使用缓存来加快构建速度"></a>尽可能使用缓存来加快构建速度</h4><p>Docker 在构建的时候，会对一些步骤使用缓存，加快再次构建时候的速度。但是要遵循一个规则，如果上一步骤的内容发生了改变，随后的步骤也不会再次使用缓存。</p>
+<p>所以，我们可以把容易改变的内容，写在后面。不容易改变的内容写在前面，以尽可能来利用缓存加快构建。</p>
+<h4 id="多阶段构建"><a href="#多阶段构建" class="headerlink" title="多阶段构建"></a>多阶段构建</h4><p>对于一些编译类型的软件，编译所需要的环境就非常巨大，但是运行程序却只需要二进制可执行文件就行了。这种场景就比较适合多阶段构建，最后产生的 Docker 镜像仅仅包含二进制可执行文件所需的运行环境。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">FROM gcc:9.4 AS builder</span><br><span class="line">COPY hello.c /src/hello.c</span><br><span class="line">WORKDIR /src</span><br><span class="line">RUN gcc --static -o hello hello.c</span><br><span class="line"></span><br><span class="line">FROM alpine:3.13.5</span><br><span class="line">COPY --from=builder /src/hello /src/hello</span><br><span class="line">ENTRYPOINT [&quot;/src/hello&quot;]</span><br></pre></td></tr></table></figure>
+
+<h4 id="尽可能使用-non-root-用户"><a href="#尽可能使用-non-root-用户" class="headerlink" title="尽可能使用 non-root 用户"></a>尽可能使用 non-root 用户</h4><p>因为 Root 拥有最大的权限，所以最好不用在容器中使用 Root 用户，而是使用非 root 用户。在 Dockerfile 中创建一个用户，并赋予最少的权限，然后使用这个用户去执行我们的应用。</p>
+
     </div>
 
     
@@ -278,6 +364,7 @@
       <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/%E5%AE%B9%E5%99%A8/" rel="tag"># 容器</a>
+              <a href="/tags/docker/" rel="tag"># docker</a>
           </div>
 
         
@@ -351,6 +438,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-FROM-%E9%80%89%E6%8B%A9%E5%9F%BA%E7%A1%80%E9%95%9C%E5%83%8F"><span class="nav-number">1.</span> <span class="nav-text">使用 FROM 选择基础镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E8%BF%87-RUN-%E6%89%A7%E8%A1%8C%E6%8C%87%E4%BB%A4"><span class="nav-number">2.</span> <span class="nav-text">通过 RUN 执行指令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%9A%84%E5%A4%8D%E5%88%B6%E5%92%8C%E7%9B%AE%E5%BD%95%E6%93%8D%E4%BD%9C"><span class="nav-number">3.</span> <span class="nav-text">文件的复制和目录操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E5%BB%BA%E5%8F%82%E6%95%B0%E5%92%8C%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="nav-number">4.</span> <span class="nav-text">构建参数和环境变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%87%E5%AE%9A%E5%AE%B9%E5%99%A8%E5%90%AF%E5%8A%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">5.</span> <span class="nav-text">指定容器启动命令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#CMD-%E7%A4%BA%E4%BE%8B"><span class="nav-number">5.1.</span> <span class="nav-text">CMD 示例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ENTRYPOINT-%E7%A4%BA%E4%BE%8B"><span class="nav-number">5.2.</span> <span class="nav-text">ENTRYPOINT 示例</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dockerfile-%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5"><span class="nav-number">6.</span> <span class="nav-text">Dockerfile 最佳实践</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B0%BD%E5%8F%AF%E8%83%BD%E4%BD%BF%E7%94%A8%E7%BC%93%E5%AD%98%E6%9D%A5%E5%8A%A0%E5%BF%AB%E6%9E%84%E5%BB%BA%E9%80%9F%E5%BA%A6"><span class="nav-number">6.1.</span> <span class="nav-text">尽可能使用缓存来加快构建速度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%9A%E9%98%B6%E6%AE%B5%E6%9E%84%E5%BB%BA"><span class="nav-number">6.2.</span> <span class="nav-text">多阶段构建</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B0%BD%E5%8F%AF%E8%83%BD%E4%BD%BF%E7%94%A8-non-root-%E7%94%A8%E6%88%B7"><span class="nav-number">6.3.</span> <span class="nav-text">尽可能使用 non-root 用户</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -366,7 +454,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-count">19</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -379,7 +467,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">11</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
